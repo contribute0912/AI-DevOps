@@ -1,0 +1,34 @@
+# Code Owners
+# This file defines who should review specific parts of the codebase
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global owners - will be requested for review on all PRs
+* @devops-team @senior-developers
+
+# GitHub Actions and CI/CD workflows
+/.github/ @devops-team @platform-team
+
+# Source code - requires developer review
+/src/ @senior-developers @backend-team
+
+# Tests - QA team should review test changes  
+/tests/ @qa-team @backend-team
+
+# Configuration files - DevOps and senior developers
+*.json @devops-team @senior-developers
+*.js @senior-developers
+*.yml @devops-team
+*.yaml @devops-team
+
+# Documentation - Technical writers and team leads
+/docs/ @technical-writers @team-leads
+README.md @technical-writers @team-leads
+CONTRIBUTING.md @team-leads
+
+# Security and compliance
+.eslintrc.js @security-team @senior-developers
+jest.config.js @qa-team @senior-developers
+package.json @devops-team @senior-developers
+
+# Infrastructure and deployment scripts
+/scripts/ @devops-team @platform-team

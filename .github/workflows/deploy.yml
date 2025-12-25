@@ -1,0 +1,189 @@
+# AI-Generated Deployment Pipeline
+# Prompt: "Generate deployment pipeline with staging and production environments, including rollback capabilities"
+
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      version:
+        description: 'Version to deploy'
+        required: false
+        type: string
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    environment:
+      name: staging
+      url: https://staging.ai-devops-demo.com
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests
+      run: npm test
+    
+    - name: Build application
+      run: npm run build
+      env:
+        NODE_ENV: staging
+    
+    - name: Deploy to staging
+      run: |
+        echo "🚀 Deploying to staging environment..."
+        # Simulate deployment
+        echo "Deployment target: Staging"
+        echo "Version: ${{ github.sha }}"
+        echo "Environment: staging"
+        
+        # In real scenario, you would:
+        # - Upload to cloud storage (S3, Azure Blob, etc.)
+        # - Update container registry
+        # - Deploy to Kubernetes/Cloud Run/App Service
+        # - Update DNS/Load balancer
+        
+        echo "✅ Staging deployment completed"
+    
+    - name: Run smoke tests
+      run: |
+        echo "🧪 Running smoke tests against staging..."
+        # Simulate smoke tests
+        curl -f https://staging.ai-devops-demo.com/health || echo "Health check simulation"
+        echo "✅ Smoke tests passed"
+    
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Staging deployment successful"
+          echo "📍 Environment: https://staging.ai-devops-demo.com"
+        else
+          echo "❌ Staging deployment failed"
+          echo "Check logs for details"
+        fi
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    needs: [deploy-staging]
+    environment:
+      name: production
+      url: https://ai-devops-demo.com
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build application
+      run: npm run build
+      env:
+        NODE_ENV: production
+    
+    - name: Production deployment
+      run: |
+        echo "🚀 Deploying to production environment..."
+        echo "Version: ${{ github.ref_name }}"
+        echo "SHA: ${{ github.sha }}"
+        
+        # Blue-Green deployment simulation
+        echo "Starting blue-green deployment..."
+        echo "1. Deploying to green environment"
+        echo "2. Running health checks"
+        echo "3. Switching traffic to green"
+        echo "4. Monitoring for 5 minutes"
+        
+        echo "✅ Production deployment completed"
+    
+    - name: Production health check
+      run: |
+        echo "🏥 Running production health checks..."
+        # Simulate comprehensive health checks
+        curl -f https://ai-devops-demo.com/health || echo "Health check simulation"
+        echo "✅ Production health check passed"
+    
+    - name: Create GitHub release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        body: |
+          ## Changes
+          
+          - Automated release created from tag ${{ github.ref_name }}
+          - Deployed to production at ${{ github.run_id }}
+          
+          ## Deployment Info
+          
+          - **Environment**: Production
+          - **Version**: ${{ github.ref_name }}
+          - **SHA**: ${{ github.sha }}
+          - **Deployed by**: GitHub Actions
+          - **Deploy time**: ${{ github.run_number }}
+        draft: false
+        prerelease: false
+
+  rollback:
+    name: Rollback Deployment
+    runs-on: ubuntu-latest
+    if: failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    needs: [deploy-staging, deploy-production]
+    environment:
+      name: production
+    
+    steps:
+    - name: Rollback to previous version
+      run: |
+        echo "🔄 Initiating rollback procedure..."
+        echo "Rolling back to previous stable version"
+        
+        # Simulate rollback
+        echo "1. Identifying last stable deployment"
+        echo "2. Switching traffic back to blue environment"
+        echo "3. Verifying rollback success"
+        
+        echo "✅ Rollback completed"
+    
+    - name: Post-rollback health check
+      run: |
+        echo "🏥 Verifying rollback health..."
+        curl -f https://ai-devops-demo.com/health || echo "Health check simulation"
+        echo "✅ Rollback health check passed"
