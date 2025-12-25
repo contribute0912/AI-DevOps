@@ -76,3 +76,5 @@ See [`docs/AI_PROMPTS.md`](docs/AI_PROMPTS.md) for curated Copilot prompts for D
 ---
 
 **Built with ❤️ by AI and DevOps best practices.**
+
+_This is a demo edit for testing GitHub authentication in VS Code._
