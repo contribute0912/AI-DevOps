@@ -1,13 +1,14 @@
 # AI-Generated Security Scanning Workflow
 # Prompt: "Create security scanning workflow with dependency vulnerability checks and CodeQL analysis"
 
+
 name: Security
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: ["*"]
   pull_request:
-    branches: [ main ]
+    branches: ["*"]
   schedule:
     - cron: '0 6 * * 1'  # Run every Monday at 6 AM UTC
 
