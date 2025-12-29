@@ -30,12 +30,23 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
+    # - name: Setup Node.js
+    #   uses: actions/setup-node@v4
+    #   with:
+    #     node-version: 18.x
+    #     cache: 'npm'
+    # - name: Install dependencies
+    #   run: npm ci
+    # - name: Run linting
+    #   run: npm run lint
+    # - name: Check code formatting
+    #   run: npm run format:check
+    # - name: Run tests
+    #   run: npm test
     - name: Check PR size
       run: |
         files_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
         lines_changed=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | awk '{print $4}' | sed 's/[^0-9]//g')
-        
         echo "Files changed: $files_changed"
         echo "Lines changed: $lines_changed"
         
