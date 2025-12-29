@@ -1,6 +1,5 @@
 const request = require('supertest');
 const app = require('../src/app');
-
 describe('AI DevOps Demo API', () => {
   // Health check tests
   describe('GET /health', () => {
